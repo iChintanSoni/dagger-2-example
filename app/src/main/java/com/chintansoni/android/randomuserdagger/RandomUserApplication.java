@@ -2,13 +2,10 @@ package com.chintansoni.android.randomuserdagger;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 
-import com.chintansoni.android.randomuserdagger.api.service.RandomUserService;
 import com.chintansoni.android.randomuserdagger.di.component.DaggerRandomUserApplicationComponent;
 import com.chintansoni.android.randomuserdagger.di.component.RandomUserApplicationComponent;
 import com.chintansoni.android.randomuserdagger.di.module.ContextModule;
-import com.squareup.picasso.Picasso;
 
 import timber.log.Timber;
 
@@ -19,8 +16,7 @@ import timber.log.Timber;
 
 public class RandomUserApplication extends Application {
 
-    private RandomUserService randomUserService;
-    private Picasso picasso;
+    private RandomUserApplicationComponent randomUserApplicationComponent;
 
     public static RandomUserApplication get(Activity activity) {
         return (RandomUserApplication) activity.getApplication();
@@ -30,26 +26,17 @@ public class RandomUserApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Context context = this;
-
         Timber.plant(new Timber.DebugTree());
 
-        RandomUserApplicationComponent randomUserApplicationComponent = DaggerRandomUserApplicationComponent.builder()
+        randomUserApplicationComponent = DaggerRandomUserApplicationComponent.builder()
                 .contextModule(new ContextModule(this))
 //                .okHttpClientModule(new OkHttpClientModule())
 //                .randomUserServiceModule(new RandomUserServiceModule())
 //                .picassoModule(new PicassoModule())
                 .build();
-
-        randomUserService = randomUserApplicationComponent.getRandomUserService();
-        picasso = randomUserApplicationComponent.getPicasso();
     }
 
-    public RandomUserService getRandomUserService() {
-        return randomUserService;
-    }
-
-    public Picasso getPicasso() {
-        return picasso;
+    public RandomUserApplicationComponent randomUserApplicationComponent() {
+        return randomUserApplicationComponent;
     }
 }

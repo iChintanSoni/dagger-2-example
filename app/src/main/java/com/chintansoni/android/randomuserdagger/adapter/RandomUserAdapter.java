@@ -1,11 +1,11 @@
 package com.chintansoni.android.randomuserdagger.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.chintansoni.android.randomuserdagger.MainActivity;
 import com.chintansoni.android.randomuserdagger.R;
 import com.chintansoni.android.randomuserdagger.api.response.Result;
 import com.chintansoni.android.randomuserdagger.viewholder.RandomUserViewHolder;
@@ -13,6 +13,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * Created by: Chintan Soni - Senior Software Engineer
@@ -22,11 +24,12 @@ import java.util.List;
 public class RandomUserAdapter extends RecyclerView.Adapter<RandomUserViewHolder> {
 
     private final Picasso picasso;
-    private final Context context;
+    private final MainActivity mainActivity;
     private List<Result> resultList = new ArrayList<>();
 
-    public RandomUserAdapter(Context context, Picasso picasso) {
-        this.context = context;
+    @Inject
+    public RandomUserAdapter(MainActivity mainActivity, Picasso picasso) {
+        this.mainActivity = mainActivity;
         this.picasso = picasso;
     }
 
@@ -40,7 +43,7 @@ public class RandomUserAdapter extends RecyclerView.Adapter<RandomUserViewHolder
     public void onBindViewHolder(RandomUserViewHolder holder, int position) {
         Result result = resultList.get(position);
         holder.textView.setText(String.format("%s %s", result.getName().getFirst(), result.getName().getLast()));
-        picasso.with(context)
+        picasso.with(mainActivity)
                 .load(result.getPicture().getLarge())
                 .into(holder.imageView);
     }

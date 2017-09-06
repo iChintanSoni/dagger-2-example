@@ -7,7 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import com.chintansoni.android.randomuserdagger.adapter.RandomUserAdapter;
 import com.chintansoni.android.randomuserdagger.api.response.RandomUserApiResponse;
 import com.chintansoni.android.randomuserdagger.api.service.RandomUserService;
-import com.squareup.picasso.Picasso;
+import com.chintansoni.android.randomuserdagger.di.component.DaggerMainActivityComponent;
+import com.chintansoni.android.randomuserdagger.di.component.MainActivityComponent;
+import com.chintansoni.android.randomuserdagger.di.module.MainActivityModule;
+
+import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -16,21 +20,24 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     Call<RandomUserApiResponse> randomUserApiResponseCall;
-    private RandomUserService randomUserService;
+    @Inject
+    RandomUserService randomUserService;
+    @Inject
+    RandomUserAdapter randomUserAdapter;
     private RecyclerView recyclerView;
-    private RandomUserAdapter randomUserAdapter;
-    private Picasso picasso;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        randomUserService = RandomUserApplication.get(this).getRandomUserService();
-        picasso = RandomUserApplication.get(this).getPicasso();
+        MainActivityComponent mainActivityComponent = DaggerMainActivityComponent.builder()
+                .mainActivityModule(new MainActivityModule(this))
+                .randomUserApplicationComponent(RandomUserApplication.get(this).randomUserApplicationComponent())
+                .build();
+        mainActivityComponent.injectMainActivity(this);
 
         recyclerView = findViewById(R.id.rv_main);
-        randomUserAdapter = new RandomUserAdapter(this, picasso);
         recyclerView.setAdapter(randomUserAdapter);
 
         randomUserApiResponseCall = randomUserService.randomUser(10);
